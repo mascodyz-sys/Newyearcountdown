@@ -3,26 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Years Countdown (IST)</title> <style>
-        :root {
-            --bg-primary: #000;
-            --bg-secondary: rgba(255,255,255,0.1);
-            --text-primary: #fff;
-            --text-secondary: #fff;
-            --shadow: rgba(0,0,0,0.1);
-        }
-        [data-theme="light"] {
-            --bg-primary: #fff;
-            --bg-secondary: rgba(0,0,0,0.05);
-            --text-primary: #333;
-            --text-secondary: #000;
-            --shadow: rgba(0,0,0,0.05);
-        }
+    <title>New Years Countdown (IST)</title>
+    <style>
+        /* --- STATIC DARK THEME STYLES --- */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             text-align: center; 
-            background: var(--bg-primary); 
-            color: var(--text-primary); 
+            background: #000; /* Locked to Dark Background */
+            color: #fff; /* Locked to White Text */
             padding: 20px; 
             margin: 0; 
             min-height: 100vh; 
@@ -34,29 +22,11 @@
             position: relative;
             overflow: hidden;
         }
-        .toggle-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10;
-        }
-        .theme-toggle {
-            background: var(--bg-secondary);
-            border: none;
-            color: var(--text-primary);
-            padding: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 16px var(--shadow);
-            font-size: 1.2em;
-        }
-        .theme-toggle:hover { transform: scale(1.1); }
+
         h1 { 
             font-size: 3em; 
-            margin-bottom: 50px; 
-            text-shadow: 2px 2px 4px var(--shadow); 
+            margin-bottom: 30px; /* Reduced margin slightly to fit message */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
             animation: fadeIn 1s ease-in; 
             z-index: 5;
         }
@@ -69,31 +39,41 @@
             z-index: 5;
         }
         .time-unit { 
-            background: var(--bg-secondary); 
+            background: rgba(255,255,255,0.1); 
             backdrop-filter: blur(10px); 
             border-radius: 20px; 
             padding: 30px 25px; 
             min-width: 120px; 
-            box-shadow: 0 8px 32px var(--shadow); 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1); 
             transition: transform 0.3s ease, box-shadow 0.3s ease; 
             animation: slideIn 0.5s ease-out; 
             position: relative;
         }
         .time-unit:hover { 
             transform: scale(1.05); 
-            box-shadow: 0 12px 40px var(--shadow); 
+            box-shadow: 0 12px 40px rgba(0,0,0,0.1); 
         }
         .time-unit span { 
             display: block; 
             font-size: 5em; 
             font-weight: bold; 
-            color: var(--text-secondary); 
+            color: #fff; 
             line-height: 1; 
         }
         .label { 
             font-size: 1em; 
             margin-top: 10px; 
             opacity: 0.9; 
+            color: #fff;
+        }
+        .time-message {
+            margin-top: 40px;
+            font-size: 2em; /* Large size for visibility */
+            font-weight: 300;
+            color: #ccc;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            animation: fadeIn 1s ease-in;
+            z-index: 5;
         }
         .happy { 
             font-size: 4em; 
@@ -113,20 +93,22 @@
              .time-unit { padding: 20px 15px; min-width: 80px; } 
              .time-unit span { font-size: 3em; } 
              h1 { font-size: 2.5em; } 
+             .time-message { font-size: 1.5em; }
         }
     </style>
 </head>
-<body data-theme="dark">
+<body>
     <canvas id="fireworks"></canvas>
-    <div class="toggle-container">
-        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
-    </div>
-    <h1>New Years Countdown (IST)</h1> <div id="countdown" class="countdown">
+    
+    <h1>New Years Countdown (IST)</h1>
+    <div id="countdown" class="countdown">
         <div class="time-unit"><span id="days">0</span><span class="label">Days</span></div>
         <div class="time-unit"><span id="hours">0</span><span class="label">Hours</span></div>
         <div class="time-unit"><span id="minutes">0</span><span class="label">Minutes</span></div>
         <div class="time-unit"><span id="seconds">0</span><span class="label">Seconds</span></div>
     </div>
+    
+    <div id="time-of-day-message" class="time-message"></div>
 
     <script>
         let targetYear = new Date().getFullYear() + 1;
@@ -134,18 +116,31 @@
         let fireworksActive = false;
         let animating = false;
         let particles = [];
+        const messageEl = document.getElementById('time-of-day-message');
 
-        function toggleTheme() {
-            const body = document.body;
-            const btn = document.getElementById('themeBtn');
-            if (body.getAttribute('data-theme') === 'dark') {
-                body.setAttribute('data-theme', 'light');
-                btn.textContent = '☀️';
-            } else {
-                body.setAttribute('data-theme', 'dark');
-                btn.textContent = '🌙';
+        // --- NEW FUNCTION TO DISPLAY TIME OF DAY ---
+        function updateTimeOfDayMessage() {
+            // Calculate current time in IST (UTC offset +5:30)
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const istTime = new Date(utc + (330 * 60000)); // 330 minutes = 5.5 hours
+
+            const istHour = istTime.getHours();
+            let message = "";
+
+            if (istHour >= 6 && istHour < 12) {
+                message = "Its Morning ";
+            } else if (istHour >= 12 && istHour < 17) { // 12 PM (noon) to 4:59 PM
+                message = "Its Afternoon ️";
+            } else if (istHour >= 17 && istHour < 20) { // 5:00 PM to 7:59 PM
+                message = "Its Evening ";
+            } else { // 8:00 PM to 5:59 AM
+                message = "Its Night ";
             }
+            
+            messageEl.textContent = message;
         }
+        // ---------------------------------------------
 
         function startFireworks() {
             if (fireworksActive) return;
@@ -211,6 +206,7 @@
 
             document.querySelector('h1').textContent = 'Happy New Year!';
             document.getElementById('countdown').style.display = 'none';
+            messageEl.style.display = 'none'; // Hide message during fireworks
 
             setTimeout(() => {
                 animating = false;
@@ -218,21 +214,18 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 fireworksActive = false;
                 document.getElementById('countdown').style.display = 'flex';
+                messageEl.style.display = 'block'; // Show message after fireworks
             }, 10000);
         }
 
         function updateCountdown() {
             const now = new Date();
-            // Target date is New Year in the Indian Standard Time (IST) zone.
             const target = new Date(`${targetYear}-01-01T00:00:00+05:30`); 
             const diff = target - now;
             const h1El = document.querySelector('h1');
             const countdownEl = document.getElementById('countdown');
             
-            // Updated main title text
             h1El.textContent = `New Years Countdown (IST)`; 
-            
-            // Updated browser tab title
             document.title = `New Years Countdown (IST)`; 
 
             if (diff > 0) {
@@ -255,8 +248,15 @@
             }
         }
 
+        // Initialize and schedule checks
+        updateTimeOfDayMessage();
         updateCountdown();
-        setInterval(updateCountdown, 1000);
+        
+        // Update countdown every second
+        setInterval(updateCountdown, 1000); 
+        
+        // Check and update the time message every minute
+        setInterval(updateTimeOfDayMessage, 60000); 
     </script>
 </body>
 </html>
