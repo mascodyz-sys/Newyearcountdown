@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYE Pro Countdown</title>
+    <style>
+        :root {
+            --bg-primary: #000;
+            --bg-secondary: rgba(255,255,255,0.1);
+            --text-primary: #fff;
+            --text-secondary: #fff;
+            --shadow: rgba(0,0,0,0.1);
+        }
+        [data-theme="light"] {
+            --bg-primary: #fff;
+            --bg-secondary: rgba(0,0,0,0.05);
+            --text-primary: #333;
+            --text-secondary: #000;
+            --shadow: rgba(0,0,0,0.05);
+        }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            background: var(--bg-primary); 
+            color: var(--text-primary); 
+            padding: 20px; 
+            margin: 0; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .toggle-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+        .theme-toggle {
+            background: var(--bg-secondary);
+            border: none;
+            color: var(--text-primary);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 16px var(--shadow);
+            font-size: 1.2em;
+        }
+        .theme-toggle:hover { transform: scale(1.1); }
+        h1 { 
+            font-size: 2.5em; 
+            margin-bottom: 30px; 
+            text-shadow: 2px 2px 4px var(--shadow); 
+            animation: fadeIn 1s ease-in; 
+            z-index: 5;
+        }
+        .countdown { 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            flex-wrap: wrap; 
+            margin: 20px 0; 
+            z-index: 5;
+        }
+        .time-unit { 
+            background: var(--bg-secondary); 
+            backdrop-filter: blur(10px); 
+            border-radius: 15px; 
+            padding: 20px 15px; 
+            min-width: 80px; 
+            box-shadow: 0 8px 32px var(--shadow); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+            animation: slideIn 0.5s ease-out; 
+            position: relative;
+        }
+        .time-unit:hover { 
+            transform: scale(1.05); 
+            box-shadow: 0 12px 40px var(--shadow); 
+        }
+        .time-unit span { 
+            display: block; 
+            font-size: 2em; 
+            font-weight: bold; 
+            color: var(--text-secondary); 
+        }
+        .label { 
+            font-size: 0.8em; 
+            margin-top: 5px; 
+            opacity: 0.9; 
+        }
+        .chat-container {
+            margin-top: 40px;
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px var(--shadow);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+        .chat-messages {
+            height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            text-align: left;
+            color: var(--text-primary);
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            color: var(--text-primary);
+        }
+        .chat-input button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            background: var(--text-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .chat-input button:hover { background: #ffaa00; }
+        .happy { 
+            font-size: 3em; 
+            animation: pulse 2s infinite; 
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        @media (max-width: 600px) { .countdown { gap: 10px; } .time-unit { padding: 15px 10px; min-width: 60px; } h1 { font-size: 2em; } }
+    </style>
+</head>
+<body data-theme="dark">
+    <canvas id="fireworks"></canvas>
+    <div class="toggle-container">
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    </div>
+    <h1>New Year Countdown (IST)</h1>
+    <div id="countdown" class="countdown">
+        <div class="time-unit"><span id="days">0</span><span class="label">Days</span></div>
+        <div class="time-unit"><span id="hours">0</span><span class="label">Hours</span></div>
+        <div class="time-unit"><span id="minutes">0</span><span class="label">Minutes</span></div>
+        <div class="time-unit"><span id="seconds">0</span><span class="label">Seconds</span></div>
+    </div>
+    <div class="chat-container">
+        <h3>Global Chat Vibes</h3>
+        <div id="messages" class="chat-messages"></div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Share your thoughts..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        let targetYear = new Date().getFullYear() + 1;
+        let prevDiff = null;
+        let fireworksActive = false;
+        let animating = false;
+        let particles = [];
+
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('themeBtn');
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                btn.textContent = '☀️';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                btn.textContent = '🌙';
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (message) {
+                const messagesDiv = document.getElementById('messages');
+                const newMsg = document.createElement('div');
+                newMsg.className = 'message';
+                newMsg.textContent = `You: ${message}`;
+                messagesDiv.appendChild(newMsg);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                input.value = '';
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function startFireworks() {
+            if (fireworksActive) return;
+            fireworksActive = true;
+            const canvas = document.getElementById('fireworks');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            animating = true;
+            const animationEndTime = Date.now() + 10000;
+
+            class Particle {
+                constructor(x, y, vx, vy, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.vx = vx;
+                    this.vy = vy;
+                    this.color = color;
+                    this.life = 100;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vy += 0.1;
+                    this.life--;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+            }
+
+            function explode(x, y) {
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+                for (let i = 0; i < 50; i++) {
+                    const angle = (Math.PI * 2 * i) / 50;
+                    const speed = Math.random() * 5 + 2;
+                    const vx = Math.cos(angle) * speed;
+                    const vy = Math.sin(angle) * speed * -1;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    particles.push(new Particle(x, y, vx, vy, color));
+                }
+            }
+
+            function animate() {
+                if (!animating) return;
+                ctx.fillStyle = 'rgba(0,0,0,0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                particles.forEach((p, i) => {
+                    p.update();
+                    p.draw();
+                    if (p.life <= 0) particles.splice(i, 1);
+                });
+                if (Date.now() < animationEndTime && Math.random() < 0.1) {
+                    explode(Math.random() * canvas.width, Math.random() * canvas.height / 2);
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            document.querySelector('h1').textContent = 'Happy New Year!';
+            document.getElementById('countdown').style.display = 'none';
+
+            setTimeout(() => {
+                animating = false;
+                particles = [];
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                fireworksActive = false;
+                document.getElementById('countdown').style.display = 'flex';
+            }, 10000);
+        }
+
+        function updateCountdown() {
+            const now = new Date();
+            const target = new Date(`${targetYear}-01-01T00:00:00+05:30`);
+            const diff = target - now;
+            const h1El = document.querySelector('h1');
+            const countdownEl = document.getElementById('countdown');
+            h1El.textContent = `New Year ${targetYear} Countdown (IST)`;
+            document.title = `NYE ${targetYear} Pro Countdown`;
+
+            if (diff > 0) {
+                countdownEl.style.display = 'flex';
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                document.getElementById('days').textContent = days;
+                document.getElementById('hours').textContent = hours;
+                document.getElementById('minutes').textContent = minutes;
+                document.getElementById('seconds').textContent = seconds;
+                prevDiff = diff;
+            } else {
+                if (prevDiff !== null && prevDiff > 0) {
+                    startFireworks();
+                }
+                targetYear++;
+                prevDiff = diff;
+            }
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
