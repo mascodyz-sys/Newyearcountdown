@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYE Pro Countdown</title>
-    <style>
+    <title>New Years Countdown</title> <style>
         :root {
             --bg-primary: #000;
             --bg-secondary: rgba(255,255,255,0.1);
@@ -55,8 +54,8 @@
         }
         .theme-toggle:hover { transform: scale(1.1); }
         h1 { 
-            font-size: 3em; /* Slightly increased for more focus */
-            margin-bottom: 50px; /* Increased margin for better spacing */
+            font-size: 3em; 
+            margin-bottom: 50px; 
             text-shadow: 2px 2px 4px var(--shadow); 
             animation: fadeIn 1s ease-in; 
             z-index: 5;
@@ -64,7 +63,7 @@
         .countdown { 
             display: flex; 
             justify-content: center; 
-            gap: 30px; /* Increased gap */
+            gap: 30px; 
             flex-wrap: wrap; 
             margin: 20px 0; 
             z-index: 5;
@@ -72,9 +71,9 @@
         .time-unit { 
             background: var(--bg-secondary); 
             backdrop-filter: blur(10px); 
-            border-radius: 20px; /* Slightly larger border-radius */
-            padding: 30px 25px; /* Increased padding */
-            min-width: 120px; /* Increased width */
+            border-radius: 20px; 
+            padding: 30px 25px; 
+            min-width: 120px; 
             box-shadow: 0 8px 32px var(--shadow); 
             transition: transform 0.3s ease, box-shadow 0.3s ease; 
             animation: slideIn 0.5s ease-out; 
@@ -86,18 +85,18 @@
         }
         .time-unit span { 
             display: block; 
-            font-size: 5em; /* <<<<<< COUNTDOWN SIZE INCREASED HERE */
+            font-size: 5em; 
             font-weight: bold; 
             color: var(--text-secondary); 
-            line-height: 1; /* Keep number and label close */
+            line-height: 1; 
         }
         .label { 
-            font-size: 1em; /* Increased label size */
+            font-size: 1em; 
             margin-top: 10px; 
             opacity: 0.9; 
         }
         .happy { 
-            font-size: 4em; /* Increased size for happy new year */
+            font-size: 4em; 
             animation: pulse 2s infinite; 
         }
         canvas {
@@ -109,10 +108,10 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        @media (max-width: 768px) { /* Adjusted media query for responsiveness */
+        @media (max-width: 768px) { 
              .countdown { gap: 15px; } 
              .time-unit { padding: 20px 15px; min-width: 80px; } 
-             .time-unit span { font-size: 3em; } /* Smaller size for mobile */
+             .time-unit span { font-size: 3em; } 
              h1 { font-size: 2.5em; } 
         }
     </style>
@@ -122,8 +121,7 @@
     <div class="toggle-container">
         <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
     </div>
-    <h1>New Year Countdown (IST)</h1>
-    <div id="countdown" class="countdown">
+    <h1>New Years Countdown</h1> <div id="countdown" class="countdown">
         <div class="time-unit"><span id="days">0</span><span class="label">Days</span></div>
         <div class="time-unit"><span id="hours">0</span><span class="label">Hours</span></div>
         <div class="time-unit"><span id="minutes">0</span><span class="label">Minutes</span></div>
@@ -148,8 +146,6 @@
                 btn.textContent = '🌙';
             }
         }
-
-        // --- Removed sendMessage and handleKeyPress functions ---
 
         function startFireworks() {
             if (fireworksActive) return;
@@ -227,13 +223,17 @@
 
         function updateCountdown() {
             const now = new Date();
-            // Note: The target date is set for New Year in the Indian Standard Time (IST) zone.
+            // Target date is New Year in the Indian Standard Time (IST) zone.
             const target = new Date(`${targetYear}-01-01T00:00:00+05:30`); 
             const diff = target - now;
             const h1El = document.querySelector('h1');
             const countdownEl = document.getElementById('countdown');
-            h1El.textContent = `New Year ${targetYear} Countdown (IST)`;
-            document.title = `NYE ${targetYear} Pro Countdown`;
+            
+            // Updated main title text
+            h1El.textContent = `New Years Countdown`; 
+            
+            // Updated browser tab title
+            document.title = `New Years Countdown`; 
 
             if (diff > 0) {
                 countdownEl.style.display = 'flex';
