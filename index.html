@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Year Countdown</title>
+    <title>NYE Pro Countdown</title>
     <style>
         :root {
             --bg-primary: #000;
@@ -55,8 +55,8 @@
         }
         .theme-toggle:hover { transform: scale(1.1); }
         h1 { 
-            font-size: 2.5em; 
-            margin-bottom: 30px; 
+            font-size: 3em; /* Slightly increased for more focus */
+            margin-bottom: 50px; /* Increased margin for better spacing */
             text-shadow: 2px 2px 4px var(--shadow); 
             animation: fadeIn 1s ease-in; 
             z-index: 5;
@@ -64,7 +64,7 @@
         .countdown { 
             display: flex; 
             justify-content: center; 
-            gap: 15px; 
+            gap: 30px; /* Increased gap */
             flex-wrap: wrap; 
             margin: 20px 0; 
             z-index: 5;
@@ -72,9 +72,9 @@
         .time-unit { 
             background: var(--bg-secondary); 
             backdrop-filter: blur(10px); 
-            border-radius: 15px; 
-            padding: 20px 15px; 
-            min-width: 80px; 
+            border-radius: 20px; /* Slightly larger border-radius */
+            padding: 30px 25px; /* Increased padding */
+            min-width: 120px; /* Increased width */
             box-shadow: 0 8px 32px var(--shadow); 
             transition: transform 0.3s ease, box-shadow 0.3s ease; 
             animation: slideIn 0.5s ease-out; 
@@ -86,64 +86,18 @@
         }
         .time-unit span { 
             display: block; 
-            font-size: 2em; 
+            font-size: 5em; /* <<<<<< COUNTDOWN SIZE INCREASED HERE */
             font-weight: bold; 
             color: var(--text-secondary); 
+            line-height: 1; /* Keep number and label close */
         }
         .label { 
-            font-size: 0.8em; 
-            margin-top: 5px; 
+            font-size: 1em; /* Increased label size */
+            margin-top: 10px; 
             opacity: 0.9; 
         }
-        .chat-container {
-            margin-top: 40px;
-            width: 100%;
-            max-width: 400px;
-            background: var(--bg-secondary);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 32px var(--shadow);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            z-index: 5;
-        }
-        .chat-messages {
-            height: 200px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-            text-align: left;
-            color: var(--text-primary);
-        }
-        .message {
-            margin-bottom: 10px;
-            padding: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-        }
-        .chat-input {
-            display: flex;
-            gap: 10px;
-        }
-        .chat-input input {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.2);
-            color: var(--text-primary);
-        }
-        .chat-input button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 10px;
-            background: var(--text-secondary);
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        .chat-input button:hover { background: #ffaa00; }
         .happy { 
-            font-size: 3em; 
+            font-size: 4em; /* Increased size for happy new year */
             animation: pulse 2s infinite; 
         }
         canvas {
@@ -155,7 +109,12 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        @media (max-width: 600px) { .countdown { gap: 10px; } .time-unit { padding: 15px 10px; min-width: 60px; } h1 { font-size: 2em; } }
+        @media (max-width: 768px) { /* Adjusted media query for responsiveness */
+             .countdown { gap: 15px; } 
+             .time-unit { padding: 20px 15px; min-width: 80px; } 
+             .time-unit span { font-size: 3em; } /* Smaller size for mobile */
+             h1 { font-size: 2.5em; } 
+        }
     </style>
 </head>
 <body data-theme="dark">
@@ -169,14 +128,6 @@
         <div class="time-unit"><span id="hours">0</span><span class="label">Hours</span></div>
         <div class="time-unit"><span id="minutes">0</span><span class="label">Minutes</span></div>
         <div class="time-unit"><span id="seconds">0</span><span class="label">Seconds</span></div>
-    </div>
-    <div class="chat-container">
-        <h3>Global Chat Vibes</h3>
-        <div id="messages" class="chat-messages"></div>
-        <div class="chat-input">
-            <input type="text" id="messageInput" placeholder="Share your thoughts..." onkeypress="handleKeyPress(event)">
-            <button onclick="sendMessage()">Send</button>
-        </div>
     </div>
 
     <script>
@@ -198,25 +149,7 @@
             }
         }
 
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const message = input.value.trim();
-            if (message) {
-                const messagesDiv = document.getElementById('messages');
-                const newMsg = document.createElement('div');
-                newMsg.className = 'message';
-                newMsg.textContent = `You: ${message}`;
-                messagesDiv.appendChild(newMsg);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                input.value = '';
-            }
-        }
-
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        }
+        // --- Removed sendMessage and handleKeyPress functions ---
 
         function startFireworks() {
             if (fireworksActive) return;
@@ -294,7 +227,8 @@
 
         function updateCountdown() {
             const now = new Date();
-            const target = new Date(`${targetYear}-01-01T00:00:00+05:30`);
+            // Note: The target date is set for New Year in the Indian Standard Time (IST) zone.
+            const target = new Date(`${targetYear}-01-01T00:00:00+05:30`); 
             const diff = target - now;
             const h1El = document.querySelector('h1');
             const countdownEl = document.getElementById('countdown');
@@ -326,4 +260,3 @@
     </script>
 </body>
 </html>
-
